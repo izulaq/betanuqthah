@@ -292,6 +292,12 @@
                                 class="w-full border border-gray-200 p-2.5 rounded-xl text-sm focus:outline-none">
                             <datalist id="instructor-suggestions"></datalist>
                         </div>
+                        <div id="course-whatsapp-group-field">
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Link Grup WhatsApp</label>
+                            <input type="url" id="course-whatsapp-group-link" placeholder="https://chat.whatsapp.com/..."
+                                class="w-full border border-gray-200 p-2.5 rounded-xl text-sm focus:outline-none">
+                            <p class="mt-1 text-[10px] text-gray-500">Materi satuan: dikirim setelah pembayaran berhasil. Paket menggunakan link dari setiap materi di dalamnya.</p>
+                        </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jumlah Pertemuan</label>
                             <input type="text" inputmode="numeric" id="meetings" placeholder="cth: 10"
@@ -1323,6 +1329,12 @@
                         <input type="text" id="edit-instructor" list="instructor-suggestions" required
                             class="w-full border border-gray-200 p-2.5 rounded-xl text-sm">
                     </div>
+                    <div id="edit-whatsapp-group-field" class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Link Grup WhatsApp</label>
+                        <input type="url" id="edit-whatsapp-group-link" placeholder="https://chat.whatsapp.com/..."
+                            class="w-full border border-gray-200 p-2.5 rounded-xl text-sm">
+                        <p class="mt-1 text-[10px] text-gray-500">Dikirim setelah pembayaran berhasil. Link paket diabaikan; link materi satuan dalam paket yang akan dikirim.</p>
+                    </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pertemuan</label>
                         <input type="text" id="edit-meetings"
@@ -1657,6 +1669,42 @@
         const COVER_UPLOAD_API_URL = `${BACKEND_API_URL}/api/upload-google-drive-cover`;
         const SUPABASE_KEY = 'sb_publishable_N96gYsm_jeSntalN3qMVCA_TpXloD4u';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function requestAdminWhatsAppGroup(courseId, method, whatsappGroupLink) {
+            if (method === 'GET') {
+                const { data, error } = await supabaseClient
+                    .from('course_whatsapp_groups')
+                    .select('whatsapp_group_link')
+                    .eq('course_id', courseId)
+                    .maybeSingle();
+                if (error) throw new Error(`Gagal memuat link grup WhatsApp: ${error.message}`);
+                return { whatsapp_group_link: data?.whatsapp_group_link || '' };
+            }
+
+            if (method !== 'PUT' || typeof whatsappGroupLink !== 'string' || whatsappGroupLink.length > 2048) {
+                throw new Error('Data link grup WhatsApp tidak valid.');
+            }
+            const trimmedLink = whatsappGroupLink.trim();
+            if (trimmedLink) {
+                let parsedLink;
+                try {
+                    parsedLink = new URL(trimmedLink);
+                } catch {
+                    throw new Error('Format link grup WhatsApp tidak valid.');
+                }
+                if (parsedLink.protocol !== 'https:') throw new Error('Link grup WhatsApp harus menggunakan HTTPS.');
+            }
+
+            const { error } = await supabaseClient
+                .from('course_whatsapp_groups')
+                .upsert({
+                    course_id: courseId,
+                    whatsapp_group_link: trimmedLink,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'course_id' });
+            if (error) throw new Error(`Gagal menyimpan link grup WhatsApp: ${error.message}`);
+            return { success: true };
+        }
 
         let addCoursePdf = [];
         let editCoursePdf = [];
@@ -2256,11 +2304,15 @@
             if (mode === 'add') {
                 const type = document.getElementById('course-bundle-type').value;
                 document.getElementById('add-bundle-container').classList.toggle('hidden', type !== 'paket');
+                document.getElementById('course-whatsapp-group-field').classList.toggle('hidden', type === 'paket');
+                if (type === 'paket') document.getElementById('course-whatsapp-group-link').value = '';
                 generateCourseId(); renderBundleChips('add'); renderBundleDropdownList('add');
                 if (type === 'paket') recalculateBundlePrice('add');
             } else {
                 const type = document.getElementById('edit-bundle-type').value;
                 document.getElementById('edit-bundle-container').classList.toggle('hidden', type !== 'paket');
+                document.getElementById('edit-whatsapp-group-field').classList.toggle('hidden', type === 'paket');
+                if (type === 'paket') document.getElementById('edit-whatsapp-group-link').value = '';
                 renderBundleChips('edit'); renderBundleDropdownList('edit');
             }
         }
@@ -3580,6 +3632,7 @@
             if (!addCourseImage?.imageUrl) { showToast('Unggah gambar cover sebelum menyimpan materi.', 'warning'); return; }
             const btnSubmit = document.getElementById('btn-simpan-materi'); btnSubmit.disabled = true; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
             const newPosition = cachedCourses.length > 0 ? (Math.max(...cachedCourses.map(c => c.position || 0)) + 1) : 0;
+            const whatsappGroupLink = isBundle ? '' : document.getElementById('course-whatsapp-group-link').value.trim();
             const rawExternalLink = document.getElementById('link').value;
             const sharePct = parseFloat(document.getElementById('instructor_share_pct').value) || 60;
             const discountPct = isBundle ? (parseFloat(document.getElementById('add-bundle-discount').value) || 0) : 0;
@@ -3587,6 +3640,17 @@
             const newCourse = { course_id: document.getElementById('course_id').value, title: document.getElementById('title').value.trim(), category: document.getElementById('category').value, subfilter: document.getElementById('subfilter').value, mode: document.getElementById('mode').value, instructor: document.getElementById('instructor').value.trim(), meetings: formatPertemuan(document.getElementById('meetings').value), class_type: document.getElementById('class_type').value, facility: document.getElementById('facility').value.trim(), quota: document.getElementById('quota').value.trim(), price: formatRupiah(document.getElementById('price').value), price_le: formatLE(document.getElementById('price_le').value), link: finalLinkField, image: addCourseImage.imageUrl, position: newPosition };
             try {
                 const { error } = await supabaseClient.from('courses').insert([newCourse]); if (error) throw error;
+                if (whatsappGroupLink) {
+                    try {
+                        await requestAdminWhatsAppGroup(newCourse.course_id, 'PUT', whatsappGroupLink);
+                    } catch (error) {
+                        e.target.reset(); document.getElementById('instructor_share_pct').value = 60; document.getElementById('nuqthah_share_pct').value = 40; selectedBundleCourseIdsAdd = []; addCoursePdf = []; addCourseImage = null; updateCoursePdfStatus('add'); updateCourseCoverStatus('add');
+                        handleBundleTypeChange('add'); updateSharePreview('add'); document.getElementById('subfilter').innerHTML = '<option value="">-- Pilih Kategori Dulu --</option>';
+                        await fetchCourses();
+                        showToast(`Materi tersimpan, tetapi link grup WhatsApp belum tersimpan: ${error.message}. Atur link melalui Edit Materi.`, 'error');
+                        return;
+                    }
+                }
                 showToast(isBundle ? 'Paket Bundling berhasil ditambahkan!' : 'Materi baru berhasil ditambahkan!', 'success');
                 e.target.reset(); document.getElementById('instructor_share_pct').value = 60; document.getElementById('nuqthah_share_pct').value = 40; selectedBundleCourseIdsAdd = []; addCoursePdf = []; addCourseImage = null; updateCoursePdfStatus('add'); updateCourseCoverStatus('add');
                 handleBundleTypeChange('add'); updateSharePreview('add'); document.getElementById('subfilter').innerHTML = '<option value="">-- Pilih Kategori Dulu --</option>';
@@ -3628,9 +3692,19 @@
         // ================================================================
         // FUNGSI EDIT & HAPUS DATA
         // ================================================================
-        function openEditModal(encodedBase64) {
+        async function openEditModal(encodedBase64) {
             const course = JSON.parse(decodeURIComponent(atob(encodedBase64)));
             const bInfo = parseBundleInfo(course);
+            let whatsappGroupLink = '';
+            if (!bInfo.isBundle) {
+                try {
+                    const groupData = await requestAdminWhatsAppGroup(course.course_id, 'GET');
+                    whatsappGroupLink = groupData.whatsapp_group_link || '';
+                } catch (error) {
+                    showToast('Tidak dapat memuat link grup WhatsApp: ' + error.message, 'error');
+                    return;
+                }
+            }
             document.getElementById('edit-course_id').value = course.course_id;
             document.getElementById('edit-title').value = course.title || '';
             document.getElementById('edit-category').value = course.category || 'syariah';
@@ -3638,6 +3712,7 @@
             document.getElementById('edit-mode').value = course.mode || 'Online';
             document.getElementById('edit-class_type').value = course.class_type || 'E-LEARNING';
             document.getElementById('edit-instructor').value = course.instructor || '';
+            document.getElementById('edit-whatsapp-group-link').value = whatsappGroupLink;
             document.getElementById('edit-meetings').value = cleanNumberString(course.meetings);
             document.getElementById('edit-facility').value = course.facility || '';
             document.getElementById('edit-quota').value = course.quota || '';
@@ -3672,6 +3747,7 @@
             const isBundle = document.getElementById('edit-bundle-type').value === 'paket';
             if (isBundle && selectedBundleCourseIdsEdit.length === 0) { showToast('Pilih minimal 1 materi untuk Paket Bundling ini.', 'warning'); return; }
             const btnSubmit = document.getElementById('btn-simpan-edit'); btnSubmit.disabled = true; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            const whatsappGroupLink = isBundle ? '' : document.getElementById('edit-whatsapp-group-link').value.trim();
             const rawExternalLink = document.getElementById('edit-link').value;
             const sharePct = parseFloat(document.getElementById('edit-instructor-share').value) || 60;
             const discountPct = isBundle ? (parseFloat(document.getElementById('edit-bundle-discount').value) || 0) : 0;
@@ -3679,6 +3755,16 @@
             const updatedData = { title: document.getElementById('edit-title').value.trim(), category: document.getElementById('edit-category').value, subfilter: document.getElementById('edit-subfilter').value, mode: document.getElementById('edit-mode').value, class_type: document.getElementById('edit-class_type').value, instructor: document.getElementById('edit-instructor').value.trim(), meetings: formatPertemuan(document.getElementById('edit-meetings').value) || '', facility: document.getElementById('edit-facility').value.trim(), quota: document.getElementById('edit-quota').value.trim(), price: formatRupiah(document.getElementById('edit-price').value) || '', price_le: formatLE(document.getElementById('edit-price_le').value) || '', link: finalLinkField, image: document.getElementById('edit-image').value.trim() };
             try {
                 const { error } = await supabaseClient.from('courses').update(updatedData).eq('course_id', courseId); if (error) throw error;
+                if (!isBundle) {
+                    try {
+                        await requestAdminWhatsAppGroup(courseId, 'PUT', whatsappGroupLink);
+                    } catch (error) {
+                        closeEditModal();
+                        await fetchCourses();
+                        showToast(`Perubahan materi tersimpan, tetapi link grup WhatsApp belum diperbarui: ${error.message}`, 'error');
+                        return;
+                    }
+                }
                 showToast('Materi & konfigurasi bagi hasil berhasil diperbarui!', 'success');
                 closeEditModal(); await fetchCourses(); renderGroupedModules(); renderGroupedQuizzes(); renderUserAccessTable(); renderFinanceDashboard(); renderSchedulesList();
             } catch (error) { showToast('Gagal mengupdate materi: ' + error.message, 'error'); }
