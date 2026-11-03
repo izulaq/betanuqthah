@@ -357,6 +357,35 @@ function parseBundleIdsFromLink(rawLink) {
     }
 }
 
+async function getPurchasedWhatsAppGroupLinks(courseId, courseData) {
+    const rawLink = String(courseData?.link || '');
+    const courseIds = Array.from(new Set((rawLink.startsWith('BUNDLE::')
+        ? parseBundleIdsFromLink(rawLink)
+        : [courseId]
+    ).filter(id => typeof id === 'string' && id.trim()).map(id => id.trim())));
+    if (courseIds.length === 0) return [];
+
+    const { data: courses, error: courseError } = await supabaseAdmin
+        .from('courses')
+        .select('course_id, title')
+        .in('course_id', courseIds);
+    if (courseError) throw courseError;
+
+    const { data: groups, error: groupError } = await supabaseAdmin
+        .from('course_whatsapp_groups')
+        .select('course_id, whatsapp_group_link')
+        .in('course_id', courseIds);
+    if (groupError) throw groupError;
+
+    const coursesById = new Map((courses || []).map(course => [course.course_id, course]));
+    const groupLinksByCourseId = new Map((groups || []).map(group => [group.course_id, group.whatsapp_group_link]));
+    return courseIds.flatMap(id => {
+        const course = coursesById.get(id);
+        const url = String(groupLinksByCourseId.get(id) || '').trim();
+        return url && course ? [{ title: course.title || id, url }] : [];
+    });
+}
+
 function parseMidtransExpiryTime(value) {
     if (!value) return null;
 
@@ -818,6 +847,15 @@ app.post('/api/midtrans-notification', async (req, res) => {
 
                 if (!wasAlreadySuccess && studentWa) {
                     const formattedRupiah = 'Rp ' + new Intl.NumberFormat('id-ID').format(trx.gross_amount || 0);
+                    let groupLinksMessage = '';
+                    try {
+                        const groupLinks = await getPurchasedWhatsAppGroupLinks(trx.course_id, courseData);
+                        if (groupLinks.length > 0) {
+                            groupLinksMessage = `\n\nLink grup WhatsApp materi:\n${groupLinks.map(group => `📲 *${group.title}:* ${group.url}`).join('\n')}`;
+                        }
+                    } catch (groupLinkError) {
+                        console.error('[WHATSAPP GROUP LINKS] Gagal memuat link grup materi:', groupLinkError.message);
+                    }
                     const successMsg = 
 `Alhamdulillah! Assalamu'alaikum *${studentName}* 🎉
 
@@ -831,6 +869,7 @@ Seluruh sesi video pembelajaran dan kuis interaktif kini telah aktif untuk akun 
 
 Silakan mulai belajar melalui tautan berikut:
 👉 ${learningUrl}
+${groupLinksMessage}
 
 *(Tips: Jika Anda ingin membuka materi di perangkat atau HP lain, cukup klik tombol "Masuk Akun" di pojok kanan atas dan masukkan email Anda untuk menerima kode OTP).*
 
