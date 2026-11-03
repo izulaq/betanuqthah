@@ -422,6 +422,89 @@
                 </div>
             </div>
 
+            <button id="video-quality-help-button" type="button"
+                class="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-left text-sm font-bold text-emerald-900 shadow-sm transition hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-primary/40">
+                🛠️ Video Buram? Klik untuk Perjelas ke HD
+            </button>
+
+            <div id="video-quality-help-modal"
+                class="fixed inset-0 z-[1000001] hidden items-center justify-center bg-black/70 p-4"
+                aria-hidden="true">
+                <div class="absolute inset-0" data-close-quality-help></div>
+                <section role="dialog" aria-modal="true" aria-labelledby="video-quality-help-title" tabindex="-1"
+                    class="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+                    <div class="mb-4 flex items-start justify-between gap-4">
+                        <div>
+                            <h3 id="video-quality-help-title" class="text-lg font-bold text-gray-900">Bantuan Kualitas Video</h3>
+                            <p class="mt-1 text-sm text-gray-600">Coba langkah berikut jika video terlihat buram.</p>
+                        </div>
+                        <button id="close-video-quality-help" type="button" aria-label="Tutup bantuan kualitas video"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-5">
+                        <section class="space-y-3 rounded-xl border border-blue-100 bg-blue-50/70 p-4">
+                            <div>
+                                <h4 class="font-bold text-blue-950">Laptop / PC</h4>
+                                <p class="mt-1 text-sm leading-relaxed text-blue-900">Ekstensi browser dapat mencoba meminta kualitas lebih tinggi, tetapi tidak menjamin 1080p pada video embed.</p>
+                            </div>
+                            <a href="https://chromewebstore.google.com/detail/youtube-auto-hd-+-fps/fcphghnknhkimeagdglkljinmpbagone"
+                                target="_blank" rel="noopener noreferrer"
+                                class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-primary/90">
+                                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                                Buka ekstensi Auto HD + FPS
+                            </a>
+                            <ol class="list-inside list-decimal space-y-2 text-sm leading-relaxed text-gray-700">
+                                <li>Periksa nama penerbit dan izin ekstensi, lalu pilih <strong>Tambahkan ke Chrome</strong>.</li>
+                                <li>Kembali ke halaman materi dan muat ulang. Ekstensi mungkin tidak bekerja pada setiap video embed.</li>
+                            </ol>
+                        </section>
+
+                        <section class="space-y-3 rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
+                            <div>
+                                <h4 class="font-bold text-emerald-950">HP / tablet — Firefox</h4>
+                                <p class="mt-1 text-sm leading-relaxed text-emerald-900">Pasang Firefox, lalu tambahkan ekstensi kualitas video melalui menu Ekstensi.</p>
+                            </div>
+                            <a href="https://play.google.com/store/apps/details?id=org.mozilla.firefox"
+                                target="_blank" rel="noopener noreferrer"
+                                class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-emerald-800">
+                                <i class="fab fa-google-play" aria-hidden="true"></i>
+                                1. Instal Firefox Browser
+                            </a>
+                            <ol start="2" class="list-inside list-decimal space-y-2 text-sm leading-relaxed text-gray-700">
+                                <li>Buka Firefox, lalu ketuk menu <strong>⋮</strong> di pojok kanan atas.</li>
+                                <li>Pilih <strong>Ekstensi</strong>.</li>
+                                <li>Gulir ke bagian paling bawah, lalu ketuk <strong>Temukan lebih banyak ekstensi</strong>.</li>
+                                <li>Di kotak pencarian, cari <strong>YouTube HD</strong>.</li>
+                                <li>Pilih ekstensi yang sesuai, lalu ketuk <strong>Add to Firefox</strong>.</li>
+                                <li>Konfirmasi dengan mengetuk <strong>Tambahkan</strong>, lalu ketuk <strong>OK</strong> jika diminta.</li>
+                                <li>Kembali ke halaman utama Firefox, lalu buka website Nuqthah menggunakan alamat di bawah.</li>
+                            </ol>
+                            <div class="rounded-lg border border-white bg-white p-3">
+                                <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Alamat website Nuqthah</p>
+                                <div class="mt-2 flex flex-col gap-2 sm:flex-row">
+                                    <code id="quality-help-site-url" class="min-w-0 flex-1 break-all rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-800">https://markaz.nuqthahlearning.my.id</code>
+                                    <button id="copy-quality-help-site-url" type="button"
+                                        class="shrink-0 rounded-lg border border-gray-300 px-4 py-2 text-sm font-bold text-gray-700 transition hover:bg-gray-50">
+                                        <i class="fas fa-copy mr-1" aria-hidden="true"></i>Salin alamat
+                                    </button>
+                                </div>
+                            </div>
+                            <ol start="9" class="list-inside list-decimal space-y-2 text-sm leading-relaxed text-gray-700">
+                                <li>Setiap kali akan menonton video, muat ulang (refresh) halaman belajar agar ekstensi mencoba menerapkan pengaturan kualitas.</li>
+                                <li>Untuk akses lebih mudah, saat website Nuqthah terbuka ketuk menu <strong>⋮</strong>, pilih <strong>Tambahkan ke layar utama (Add to Home screen)</strong>, lalu konfirmasi dengan mengetuk <strong>Tambahkan</strong>. Ikon Nuqthah akan muncul di layar utama perangkat.</li>
+                            </ol>
+                        </section>
+
+                        <p class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
+                            Ekstensi pihak ketiga dapat meminta akses ke data situs dan tidak menjamin kualitas 1080p. Nama dan ketersediaan ekstensi dapat berubah; periksa penerbit serta izinnya sebelum memasang.
+                        </p>
+                    </div>
+                </section>
+            </div>
+
             <!-- Detail Materi & Pengajar -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
                 <div>
@@ -863,6 +946,7 @@
         let pendingPaymentInfo = null;
         let pendingPaymentStatusInterval = null;
         let currentModules = [];
+        let currentModuleSections = [];
         let activeModuleIndex = 0;
         let isUserHasAccess = false;
         let userAccessibleCourseIds = [];
@@ -925,6 +1009,11 @@
         const btnFullscreen = document.getElementById('btn-fullscreen');
         const iconFullscreen = document.getElementById('icon-fullscreen');
         const btnRotate = document.getElementById('btn-rotate');
+        const videoQualityHelpButton = document.getElementById('video-quality-help-button');
+        const videoQualityHelpModal = document.getElementById('video-quality-help-modal');
+        const videoQualityHelpDialog = videoQualityHelpModal.querySelector('[role="dialog"]');
+        const closeVideoQualityHelpButton = document.getElementById('close-video-quality-help');
+        const copyQualityHelpSiteUrlButton = document.getElementById('copy-quality-help-site-url');
 
         /* ================================================================
            HELPER PARSE BUNDLING PAKET
@@ -1388,6 +1477,15 @@
                     currentModules = [];
                 }
 
+                const { data: moduleSections, error: sectionErr } = await supabaseClient
+                    .from('module_sections')
+                    .select('*')
+                    .in('course_id', targetIdsForContent)
+                    .order('position', { ascending: true })
+                    .order('id', { ascending: true });
+                if (sectionErr) throw sectionErr;
+                currentModuleSections = moduleSections || [];
+
                 document.getElementById('total-modules-badge').textContent = `${currentModules.length} Sesi`;
                 if (currentModules.length > 4 || isBundleCourse) {
                     document.getElementById('module-search-wrapper').classList.remove('hidden');
@@ -1398,7 +1496,7 @@
                 if (currentModules.length > 0) {
                     loadModule(0);
                 } else {
-                    document.getElementById('modules-list').innerHTML = '<p class="text-xs text-gray-400 text-center py-4">Belum ada modul video.</p>';
+                    renderModulesList();
                     document.getElementById('current-module-title').textContent = 'Belum ada sesi';
                 }
 
@@ -1452,80 +1550,115 @@
             const searchQuery = (document.getElementById('module-search-input')?.value || '').toLowerCase().trim();
             container.innerHTML = '';
 
-            if (currentModules.length === 0) {
+            if (currentModules.length === 0 && currentModuleSections.length === 0) {
                 container.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">Belum ada modul video.</p>';
                 return;
             }
 
-            // Jika Materi Paket (Bundling), kelompokkan video berdasarkan mata pelajaran (course_id)
-            if (isBundleCourse && bundledCourseIds.length > 0) {
-                const groups = {};
-                const groupOrder = [courseId, ...bundledCourseIds];
+            const renderSectionGroups = (items, namespace, fallbackInstructor, sections, courseMatchesSearch) => {
+                const groups = new Map();
+                const sectionsById = new Map(sections.map(section => [String(section.id), section]));
+                const addSectionGroup = (key, name, instructor) => {
+                    if (!groups.has(key)) groups.set(key, { sectionName: name || 'Sesi Pembelajaran', instructor: instructor || '', entries: [] });
+                    return groups.get(key);
+                };
 
-                currentModules.forEach((mod, globalIdx) => {
-                    const cId = mod.course_id;
-                    const cObj = bundledCoursesMap[cId];
-                    const cTitle = cObj ? cObj.title : 'Materi Paket';
-
-                    if (searchQuery) {
-                        const matchTitle = (mod.title || '').toLowerCase().includes(searchQuery);
-                        const matchCourse = cTitle.toLowerCase().includes(searchQuery);
-                        if (!matchTitle && !matchCourse) return;
-                    }
-
-                    if (!groups[cId]) groups[cId] = [];
-                    groups[cId].push({ mod, globalIdx });
+                sections.forEach(section => {
+                    const sectionName = (section.name || '').trim() || 'Sesi Pembelajaran';
+                    const instructor = (section.instructor || '').trim() || fallbackInstructor || '';
+                    const matchesSearch = !searchQuery || courseMatchesSearch
+                        || sectionName.toLowerCase().includes(searchQuery)
+                        || instructor.toLowerCase().includes(searchQuery);
+                    if (matchesSearch) addSectionGroup(`id:${section.id}`, sectionName, instructor);
                 });
 
-                const activeCourseId = currentModules[activeModuleIndex]?.course_id;
-                let renderedGroupCount = 0;
+                items.forEach(entry => {
+                    const mod = entry.mod;
+                    const section = sectionsById.get(String(mod.section_id))
+                        || sections.find(item => item.name === mod.section_name);
+                    const sectionName = (section?.name || mod.section_name || '').trim() || 'Sesi Pembelajaran';
+                    const instructor = (section?.instructor || mod.section_instructor || '').trim() || fallbackInstructor || '';
+                    const key = section ? `id:${section.id}` : `legacy:${sectionName}\u0000${instructor}`;
+                    addSectionGroup(key, sectionName, instructor).entries.push(entry);
+                });
 
-                groupOrder.forEach(cId => {
-                    const items = groups[cId];
-                    if (!items || items.length === 0) return;
-                    renderedGroupCount++;
-
-                    const cObj = bundledCoursesMap[cId];
-                    const groupTitle = cObj ? cObj.title : 'Sesi Paket Utama';
-                    const groupInstructor = cObj?.instructor || '';
-                    const accId = `bundle-mod-acc-${cId.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
-                    const isGroupActive = (cId === activeCourseId) || Boolean(searchQuery);
-
-                    const groupWrapper = document.createElement('div');
-                    groupWrapper.className = 'border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm';
-
-                    let itemsHtml = '';
-                    items.forEach((entry, localIdx) => {
+                return Array.from(groups.values()).map((group, sectionIndex) => {
+                    const sectionId = `${namespace}-section-${sectionIndex}`;
+                    const sectionIsActive = group.entries.some(entry => entry.globalIdx === activeModuleIndex);
+                    const rows = group.entries.map((entry, rowIndex) => {
                         const { mod, globalIdx } = entry;
                         const isLocked = !isUserHasAccess && !mod.is_free_trial;
                         const isActive = globalIdx === activeModuleIndex;
-
-                        itemsHtml += `
+                        return `
                             <div onclick="handleModuleItemClick(${globalIdx}, ${isLocked})"
                                 class="p-3 border-t border-gray-100 flex items-center justify-between transition cursor-pointer ${isActive ? 'bg-primary/10 border-l-4 border-l-primary' : 'hover:bg-gray-50'}">
                                 <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                                    <div class="w-7 h-7 rounded-lg ${isActive ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-[11px] shrink-0">
-                                        ${localIdx + 1}
-                                    </div>
+                                    <div class="w-7 h-7 rounded-lg ${isActive ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-[11px] shrink-0">${rowIndex + 1}</div>
                                     <div class="min-w-0">
                                         <h4 class="text-xs font-bold ${isActive ? 'text-primary' : 'text-gray-800'} line-clamp-1">${escapeHtml(mod.title)}</h4>
                                         <span class="text-[10px] ${mod.is_free_trial ? 'text-emerald-600 font-semibold' : 'text-gray-400'}">${mod.is_free_trial ? 'Free Trial' : 'Berbayar'}</span>
                                     </div>
                                 </div>
-                                <div class="shrink-0">
-                                    ${isLocked ? '<i class="fas fa-lock text-gray-400 text-xs"></i>' : `<i class="fas ${isActive ? 'fa-volume-up' : 'fa-play'} text-primary text-xs"></i>`}
-                                </div>
-                            </div>
-                        `;
-                    });
+                                <div class="shrink-0">${isLocked ? '<i class="fas fa-lock text-gray-400 text-xs"></i>' : `<i class="fas ${isActive ? 'fa-volume-up' : 'fa-play'} text-primary text-xs"></i>`}</div>
+                            </div>`;
+                    }).join('');
 
+                    return `
+                        <section class="border-t border-gray-100 first:border-t-0">
+                            <button type="button" onclick="toggleSubjectAccordion('${sectionId}')"
+                                class="w-full bg-white hover:bg-gray-50 px-3.5 py-2.5 flex items-center justify-between text-left transition">
+                                <div class="min-w-0 pr-2">
+                                    <div class="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+                                        <i class="fas fa-layer-group text-accent"></i>
+                                        <span class="truncate">${escapeHtml(group.sectionName)}</span>
+                                    </div>
+                                    ${group.instructor ? `<div class="text-[10px] text-gray-400 truncate mt-0.5">${escapeHtml(group.instructor)}</div>` : ''}
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">${group.entries.length} Video</span>
+                                    <i id="icon-${sectionId}" class="fas fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 ${sectionIsActive || searchQuery ? 'rotate-180' : ''}"></i>
+                                </div>
+                            </button>
+                            <div id="${sectionId}" class="${sectionIsActive || searchQuery ? '' : 'hidden'}">${rows || '<p class="px-3 py-2 text-[10px] text-gray-400">Belum ada video pada bagian ini.</p>'}</div>
+                        </section>`;
+                }).join('');
+            };
+
+            if (isBundleCourse && bundledCourseIds.length > 0) {
+                const groups = {};
+                const groupOrder = [courseId, ...bundledCourseIds];
+                currentModules.forEach((mod, globalIdx) => {
+                    const cId = mod.course_id;
+                    const cObj = bundledCoursesMap[cId];
+                    const cTitle = cObj ? cObj.title : 'Materi Paket';
+                    const matchCourse = cTitle.toLowerCase().includes(searchQuery);
+                    const matchVideo = (mod.title || '').toLowerCase().includes(searchQuery);
+                    const section = currentModuleSections.find(item => String(item.id) === String(mod.section_id));
+                    const matchSection = (section?.name || mod.section_name || '').toLowerCase().includes(searchQuery);
+                    const matchInstructor = (section?.instructor || mod.section_instructor || cObj?.instructor || '').toLowerCase().includes(searchQuery);
+                    if (searchQuery && !matchCourse && !matchVideo && !matchSection && !matchInstructor) return;
+                    if (!groups[cId]) groups[cId] = [];
+                    groups[cId].push({ mod, globalIdx });
+                });
+
+                groupOrder.forEach(cId => {
+                    const items = groups[cId] || [];
+                    const sections = currentModuleSections.filter(section => section.course_id === cId);
+                    const cObj = bundledCoursesMap[cId];
+                    const groupTitle = cObj ? cObj.title : 'Sesi Paket Utama';
+                    const groupInstructor = cObj?.instructor || '';
+                    const courseMatchesSearch = Boolean(searchQuery) && groupTitle.toLowerCase().includes(searchQuery);
+                    if (items.length === 0 && sections.length === 0) return;
+                    const accId = `bundle-mod-acc-${cId.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+                    const isGroupActive = items.some(entry => entry.globalIdx === activeModuleIndex) || Boolean(searchQuery);
+                    const groupWrapper = document.createElement('div');
+                    groupWrapper.className = 'border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm';
                     groupWrapper.innerHTML = `
                         <button type="button" onclick="toggleSubjectAccordion('${accId}')"
                             class="w-full bg-gray-50 hover:bg-gray-100 px-3.5 py-2.5 flex items-center justify-between text-left transition">
                             <div class="min-w-0 pr-2">
                                 <div class="text-xs font-bold text-primary flex items-center gap-1.5">
-                                    <i class="fas fa-book-open text-accent"></i>
-                                    <span class="truncate">${escapeHtml(groupTitle)}</span>
+                                    <i class="fas fa-book-open text-accent"></i><span class="truncate">${escapeHtml(groupTitle)}</span>
                                 </div>
                                 ${groupInstructor ? `<div class="text-[10px] text-gray-400 truncate mt-0.5">${escapeHtml(groupInstructor)}</div>` : ''}
                             </div>
@@ -1535,51 +1668,30 @@
                             </div>
                         </button>
                         <div id="${accId}" class="${isGroupActive ? '' : 'hidden'}">
-                            ${itemsHtml}
-                        </div>
-                    `;
+                            ${renderSectionGroups(items, accId, groupInstructor, sections, courseMatchesSearch)}
+                        </div>`;
                     container.appendChild(groupWrapper);
                 });
-
-                if (renderedGroupCount === 0) {
-                    container.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">Tidak ada sesi video yang cocok dengan pencarian.</p>';
+            } else {
+                const cObj = bundledCoursesMap[courseId] || courseData;
+                const courseMatchesSearch = Boolean(searchQuery)
+                    && `${cObj?.title || ''} ${cObj?.instructor || ''}`.toLowerCase().includes(searchQuery);
+                const visibleItems = currentModules.map((mod, globalIdx) => ({ mod, globalIdx })).filter(({ mod }) => {
+                    if (!searchQuery || courseMatchesSearch) return true;
+                    const section = currentModuleSections.find(item => String(item.id) === String(mod.section_id));
+                    return (mod.title || '').toLowerCase().includes(searchQuery)
+                        || (section?.name || mod.section_name || '').toLowerCase().includes(searchQuery)
+                        || (section?.instructor || mod.section_instructor || '').toLowerCase().includes(searchQuery);
+                });
+                const sections = currentModuleSections.filter(section => section.course_id === courseId);
+                if (visibleItems.length > 0 || sections.length > 0) {
+                    const groupsHtml = renderSectionGroups(visibleItems, 'course-modules', cObj?.instructor || '', sections, courseMatchesSearch);
+                    if (groupsHtml) container.innerHTML = `<div class="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">${groupsHtml}</div>`;
                 }
-                return;
             }
 
-            // Jika Materi Satuan (Standar)
-            let visibleCount = 0;
-            currentModules.forEach((mod, index) => {
-                if (searchQuery && !(mod.title || '').toLowerCase().includes(searchQuery)) return;
-                visibleCount++;
-
-                const isLocked = !isUserHasAccess && !mod.is_free_trial;
-                const isActive = index === activeModuleIndex;
-
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-xl border flex items-center justify-between transition cursor-pointer ${isActive ? 'bg-primary/5 border-primary' : 'bg-white border-gray-100 hover:bg-gray-50'}`;
-
-                div.innerHTML = `
-                    <div class="flex items-center gap-3 min-w-0 pr-2">
-                        <div class="w-8 h-8 rounded-lg ${isActive ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-xs shrink-0">
-                            ${index + 1}
-                        </div>
-                        <div class="min-w-0">
-                            <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${escapeHtml(mod.title)}</h4>
-                            <span class="text-[10px] text-gray-400">${mod.is_free_trial ? 'Free Trial' : 'Berbayar'}</span>
-                        </div>
-                    </div>
-                    <div class="shrink-0">
-                        ${isLocked ? '<i class="fas fa-lock text-gray-400 text-xs"></i>' : '<i class="fas fa-play text-primary text-xs"></i>'}
-                    </div>
-                `;
-
-                div.onclick = () => handleModuleItemClick(index, isLocked);
-                container.appendChild(div);
-            });
-
-            if (visibleCount === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">Sesi tidak ditemukan.</p>';
+            if (container.children.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">${searchQuery ? 'Tidak ada sesi video yang cocok dengan pencarian.' : 'Belum ada sesi pembelajaran.'}</p>`;
             }
         }
 
@@ -1935,6 +2047,48 @@
             }
         }
 
+        function openVideoQualityHelp() {
+            videoQualityHelpModal.classList.remove('hidden');
+            videoQualityHelpModal.classList.add('flex');
+            videoQualityHelpModal.setAttribute('aria-hidden', 'false');
+            closeVideoQualityHelpButton.focus();
+        }
+
+        function closeVideoQualityHelp() {
+            videoQualityHelpModal.classList.add('hidden');
+            videoQualityHelpModal.classList.remove('flex');
+            videoQualityHelpModal.setAttribute('aria-hidden', 'true');
+            videoQualityHelpButton.focus();
+        }
+
+        async function copyQualityHelpSiteUrl() {
+            const websiteUrl = document.getElementById('quality-help-site-url').textContent.trim();
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(websiteUrl);
+                } else {
+                    const temporaryInput = document.createElement('textarea');
+                    temporaryInput.value = websiteUrl;
+                    temporaryInput.setAttribute('readonly', '');
+                    temporaryInput.style.position = 'fixed';
+                    temporaryInput.style.opacity = '0';
+                    document.body.appendChild(temporaryInput);
+                    let copied;
+                    try {
+                        temporaryInput.select();
+                        copied = document.execCommand('copy');
+                    } finally {
+                        temporaryInput.remove();
+                    }
+                    if (!copied) throw new Error('Browser menolak menyalin alamat website.');
+                }
+                showToast('Alamat website Nuqthah berhasil disalin.', 'success', 'Berhasil Disalin');
+            } catch (error) {
+                console.error('Gagal menyalin alamat website Nuqthah:', error);
+                showToast('Alamat tidak dapat disalin otomatis. Silakan salin alamat yang ditampilkan.', 'error', 'Gagal Menyalin');
+            }
+        }
+
         /* ================================================================
            FULLSCREEN & PUTAR LAYAR LANSKAP (SUPPORT ANDROID & IPHONE/IOS)
         ================================================================ */
@@ -2034,6 +2188,20 @@
         }
 
         function setupCustomPlayerEvents() {
+            videoQualityHelpButton.addEventListener('click', openVideoQualityHelp);
+            closeVideoQualityHelpButton.addEventListener('click', closeVideoQualityHelp);
+            videoQualityHelpModal.addEventListener('click', (event) => {
+                if (event.target === videoQualityHelpModal || event.target.closest('[data-close-quality-help]')) {
+                    closeVideoQualityHelp();
+                }
+            });
+            videoQualityHelpDialog.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeVideoQualityHelp();
+                }
+            });
+            copyQualityHelpSiteUrlButton.addEventListener('click', copyQualityHelpSiteUrl);
+
             videoClickArea.addEventListener('click', (e) => {
                 if (e.target.closest('#player-error')) return;
                 if (e.target.closest('#center-play-btn')) togglePlayPause();
