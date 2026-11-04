@@ -256,7 +256,7 @@
         class="main-nav fixed top-0 left-0 right-0 w-full bg-primary text-white shadow-md px-4 md:px-6 h-12 md:h-16 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-2 md:gap-3 hover:opacity-90 transition-opacity">
             <i class="fas fa-home text-xl md:text-2xl text-white"></i>
-            <span class="font-bold text-sm md:text-base hidden sm:inline">Beranda</span>
+            <span class="font-bold text-sm md:text-base hidden sm:inline">Markaz Nuqtah</span>
         </a>
 
         <div class="flex items-center gap-1.5 md:gap-3">
@@ -442,8 +442,7 @@
     <section id="katalog-section" class="bg-white border-t border-gray-100">
 
         <!-- Header Katalog & Search Bar -->
-        <div
-            class="sticky-filter sticky bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
+        <div class="sticky-filter sticky bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
             <div
                 class="max-w-screen-xl mx-auto px-4 md:px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
 
@@ -617,7 +616,7 @@
             <!-- STEP 2: OTP Code -->
             <div id="otp-step-verify" class="space-y-4 hidden">
                 <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">
-                    Kode OTP 6 digit telah dikirim ke <strong id="otp-target-email-label">-</strong>.
+                    Kode OTP 6 digit telah dikirim ke <strong id="otp-target-email-label">-</strong>. Kode berlaku selama 60 detik.
                 </div>
                 <div>
                     <label
@@ -1354,8 +1353,8 @@
             container.innerHTML = `
                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                     ${Array.from(courseEvaluations.values())
-                        .sort((a, b) => new Date(b.latest?.date || 0).getTime() - new Date(a.latest?.date || 0).getTime())
-                        .map(item => {
+                    .sort((a, b) => new Date(b.latest?.date || 0).getTime() - new Date(a.latest?.date || 0).getTime())
+                    .map(item => {
                         const percentage = item.total > 0 ? Math.round((item.correct / item.total) * 100) : 0;
                         const level = percentage <= 50
                             ? { label: 'Perlu Belajar Lagi', color: 'text-red-700', background: 'bg-red-50', bar: 'bg-red-500' }
@@ -1378,7 +1377,7 @@
                                 <p class="mt-1 text-[9px] text-gray-400">Terakhir: Sesi ${Number(item.latest?.session) || 1} · ${Number(item.latest?.correct) || 0}/${Number(item.latest?.total) || 0}</p>
                             </article>
                         `;
-                        }).join('')}
+                    }).join('')}
                 </div>
             `;
         }
