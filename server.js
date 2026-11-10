@@ -11,6 +11,8 @@ const MAX_PDF_SIZE = 4 * 1024 * 1024;
 const MAX_COVER_SIZE = 3 * 1024 * 1024;
 const GDRIVE_COVER_SCRIPT_VERSION = 2;
 const OTP_TTL_MS = 60 * 1000;
+const OTP_WARNING_THRESHOLD = 3;
+const OTP_WARNING_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 app.use(cors());
 app.use(express.json({ limit: '18mb' }));
@@ -560,16 +562,18 @@ app.post('/api/create-transaction', async (req, res) => {
 
         let transaction = await snap.createTransaction(parameter);
 
-        await supabaseAdmin.from('transactions').insert([{
+        const { error: transactionError } = await supabaseAdmin.from('transactions').insert([{
             order_id: orderId,
             user_id: user_id || userData?.id || null,
             user_email: user_email || null,
             course_id: course_id,
             gross_amount: cleanPrice,
             status: 'pending',
+            snap_token: transaction.token,
             created_at: new Date().toISOString()
             // payment_type dibiarkan null dulu sampai siswa memilih metode bayar di Midtrans
         }]);
+        if (transactionError) throw transactionError;
 
         if (studentWa) {
             const formattedRupiah = 'Rp ' + new Intl.NumberFormat('id-ID').format(cleanPrice);
@@ -617,7 +621,7 @@ app.get('/api/pending-transaction', async (req, res) => {
 
         const { data: transactions, error: transactionsError } = await supabaseAdmin
             .from('transactions')
-            .select('order_id, user_id, user_email, course_id, status, payment_type, gross_amount')
+            .select('order_id, user_id, user_email, course_id, status, payment_type, gross_amount, snap_token')
             .eq('user_email', email)
             .eq('course_id', courseId)
             .in('status', ['pending', 'success'])
@@ -661,7 +665,6 @@ app.get('/api/pending-transaction', async (req, res) => {
             }
 
             const isActive = status === 'pending' &&
-                Boolean(paymentType) &&
                 (!validExpiry || validExpiry.getTime() > Date.now());
 
             if (isActive) {
@@ -675,6 +678,7 @@ app.get('/api/pending-transaction', async (req, res) => {
                     active: true,
                     order_id: transaction.order_id,
                     payment_type: paymentType,
+                    token: transaction.snap_token || null,
                     gross_amount: transaction.gross_amount,
                     expires_at: validExpiry ? validExpiry.toISOString() : null,
                     server_time: new Date().toISOString()
@@ -947,6 +951,17 @@ app.post('/api/send-otp', async (req, res) => {
             });
         }
 
+        const emailForOtp = String(email).trim().toLowerCase();
+        const warningWindowStart = new Date(Date.now() - OTP_WARNING_WINDOW_MS).toISOString();
+        const { data: recentOtps, error: recentOtpsError } = await supabaseAdmin
+            .from('otps')
+            .select('id')
+            .eq('email', emailForOtp)
+            .gte('created_at', warningWindowStart);
+
+        if (recentOtpsError) throw recentOtpsError;
+        const otpRequestsLastWeek = recentOtps?.length || 0;
+
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
             throw new Error('Pengiriman email belum dikonfigurasi.');
         }
@@ -976,6 +991,18 @@ app.post('/api/send-otp', async (req, res) => {
                 </div>
             `
         });
+
+        // Kirim tepat saat permintaan ke-4 pada jendela 7 hari, agar tidak
+        // mengirim peringatan berulang pada setiap permintaan berikutnya.
+        if (otpRequestsLastWeek === OTP_WARNING_THRESHOLD && userExist.whatsapp) {
+            const warningMessage = `Assalamu'alaikum *${userExist.name || 'Sahabat Nuqthah'}*,\n\nKami melihat ada lebih dari 3 permintaan kode OTP untuk akun Anda dalam 7 hari terakhir. Jika ini bukan aktivitas Anda, segera hubungi admin Nuqthah Learning Center. Jangan bagikan kode OTP kepada siapa pun. 🙏`;
+            try {
+                await sendFonnteWhatsApp(userExist.whatsapp, warningMessage);
+            } catch (whatsappError) {
+                // Kegagalan WhatsApp tidak boleh menggagalkan pengiriman OTP melalui email.
+                console.error('[OTP WHATSAPP WARNING] Gagal mengirim peringatan:', whatsappError.message);
+            }
+        }
 
         res.json({ success: true, message: 'Kode OTP berhasil dikirim.' });
     } catch (err) {
