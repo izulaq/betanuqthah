@@ -5,14 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruang Belajar - Nuqthah Learning Center</title>
+    <meta name="theme-color" content="#0F4A3A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <!-- Favicon -->
     <link rel="icon" type="image/png"
         href="https://userkv.r2.mayar.id/landing-page/assets/nuqthah-kind-kingdom-2402/2ef2247a_file_0000000005ac82469e639ea2dfd71b0e.png">
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="https://userkv.r2.mayar.id/landing-page/assets/nuqthah-kind-kingdom-2402/2ef2247a_file_0000000005ac82469e639ea2dfd71b0e.png">
+    <link rel="manifest" href="./manifest.json">
+    <script src="./pwa-install.js" defer></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Midtrans Snap JS -->
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-754cMC--NA3n9V3s-gB88I2P"></script>
+    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-bgr.FUM3wElPD9oBvn8q4mei"></script>
     <!-- YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
@@ -28,6 +35,57 @@
         }
     </script>
     <style>
+        #access-loading-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: #f9fafb;
+        }
+
+        #access-loading-overlay[hidden] {
+            display: none;
+        }
+
+        .access-loading-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.9rem;
+            color: #234b36;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .access-loading-spinner {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 3px solid rgba(35, 75, 54, 0.16);
+            border-top-color: #234b36;
+            border-radius: 50%;
+            animation: access-loading-spin 0.8s linear infinite;
+        }
+
+        .access-loading-dots::after {
+            content: "";
+            animation: access-loading-dots 1.2s steps(4, end) infinite;
+        }
+
+        @keyframes access-loading-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes access-loading-dots {
+            0% { content: ""; }
+            25% { content: "."; }
+            50% { content: ".."; }
+            75%, 100% { content: "..."; }
+        }
+
         /* ============ VIDEO PLAYER ============ */
         .nuqthah-player-wrapper {
             position: relative;
@@ -77,9 +135,12 @@
 
         .video-iframe-layer {
             position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
+            top: 50%;
+            left: 50%;
+            width: calc(100% * var(--yt-viewport-scale, 1));
+            height: calc(100% * var(--yt-viewport-scale, 1));
+            transform: translate(-50%, -50%) scale(calc(1 / var(--yt-viewport-scale, 1)));
+            transform-origin: center center;
             pointer-events: none !important;
         }
 
@@ -149,13 +210,19 @@
 
         .nuqthah-player-wrapper.is-sticky-playing {
             position: sticky;
-            top: 0.75rem;
+            top: calc(var(--learning-nav-height, 0px) + 0.75rem);
             z-index: 40;
             align-self: start;
         }
 
         .nuqthah-player-placeholder {
             width: 100%;
+        }
+
+        .learning-top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
         @media (min-width: 1024px) and (orientation: landscape) {
@@ -253,13 +320,20 @@
 
 <body class="bg-gray-50 text-gray-900 font-sans">
 
+    <div id="access-loading-overlay" role="status" aria-live="polite">
+        <div class="access-loading-card">
+            <span class="access-loading-spinner" aria-hidden="true"></span>
+            <span>Memuat status akses<span class="access-loading-dots" aria-hidden="true"></span></span>
+        </div>
+    </div>
+
     <!-- ================= TOAST CONTAINER ================= -->
     <div id="toast-container" aria-live="polite"
         class="fixed top-3 right-3 left-3 sm:left-auto sm:right-5 z-[999999] flex flex-col items-end gap-2.5 pointer-events-none">
     </div>
 
     <!-- Top Navigation -->
-    <nav class="bg-primary text-white px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-2 shadow-md">
+    <nav class="learning-top-nav bg-primary text-white px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-2 shadow-md">
         <a href="index.html" class="flex items-center gap-2 font-bold text-xs sm:text-sm hover:opacity-90">
             <i class="fas fa-arrow-left"></i> Kembali ke Katalog Materi
         </a>
@@ -857,9 +931,11 @@
                 </div>
             </div>
 
-            <div id="pq-session-modal" class="fixed inset-0 z-[1000000] hidden items-center justify-center bg-black/60 p-4">
-            <div class="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-5 text-center shadow-2xl sm:p-6">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-2xl">
+            <div id="pq-session-modal"
+                class="fixed inset-0 z-[1000000] hidden items-center justify-center bg-black/60 p-4">
+                <div class="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-5 text-center shadow-2xl sm:p-6">
+                    <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-2xl">
                         <i class="fas fa-check"></i>
                     </div>
                     <h2 id="pq-session-title" class="mb-2 text-2xl font-bold text-primary">Sesi Selesai!</h2>
@@ -890,7 +966,7 @@
         const SUPABASE_KEY = 'sb_publishable_N96gYsm_jeSntalN3qMVCA_TpXloD4u';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const BACKEND_BASE_URL = 'https://betanuqthah.vercel.app';
+        const BACKEND_BASE_URL = 'https://markaznuqtoh.vercel.app';
         const SOAL_PER_SESI = 20;
 
         /* ================================================================
@@ -1250,9 +1326,27 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             updateModuleSidebarPosition();
+            const learningTopNav = document.querySelector('.learning-top-nav');
+            const updateLearningNavHeight = () => {
+                if (learningTopNav) {
+                    document.documentElement.style.setProperty(
+                        '--learning-nav-height',
+                        `${learningTopNav.getBoundingClientRect().height}px`
+                    );
+                }
+            };
+            updateLearningNavHeight();
+            if (learningTopNav && 'ResizeObserver' in window) {
+                new ResizeObserver(updateLearningNavHeight).observe(learningTopNav);
+            } else {
+                window.addEventListener('resize', updateLearningNavHeight);
+            }
             playerHomeTop = playerContainer.getBoundingClientRect().top + window.scrollY;
             window.addEventListener('scroll', updatePlayerScrollMode, { passive: true });
-            window.addEventListener('resize', updatePlayerScrollMode);
+            window.addEventListener('resize', () => {
+                updatePlayerScrollMode();
+                syncYoutubeViewportScale();
+            });
             const moduleLayoutQuery = window.matchMedia('(max-width: 1023px)');
             if (moduleLayoutQuery.addEventListener) {
                 moduleLayoutQuery.addEventListener('change', updateModuleSidebarPosition);
@@ -1474,6 +1568,8 @@
             } catch (err) {
                 console.error(err);
                 showToast(err.message || 'Terjadi kesalahan saat memuat materi.', 'error', 'Gagal Memuat');
+            } finally {
+                document.getElementById('access-loading-overlay').hidden = true;
             }
         }
 
@@ -1660,6 +1756,7 @@
             if (container.children.length === 0) {
                 container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">${searchQuery ? 'Tidak ada sesi video yang cocok dengan pencarian.' : 'Belum ada sesi pembelajaran.'}</p>`;
             }
+
         }
 
         function handleModuleItemClick(index, isLocked) {
@@ -1734,10 +1831,13 @@
                 return;
             }
 
+            syncYoutubeViewportScale();
+
             if (player && activePlayerVideoId === videoId && typeof player.loadVideoById === 'function') {
                 const videoOptions = {
                     videoId: videoId,
-                    startSeconds: resumeTime > 2 ? resumeTime : 0
+                    startSeconds: resumeTime > 2 ? resumeTime : 0,
+                    suggestedQuality: 'hd1080'
                 };
                 player.loadVideoById(videoOptions);
                 disablePlayerCaptions();
@@ -1752,6 +1852,7 @@
                     playbackRate: player.getPlaybackRate ? player.getPlaybackRate() : 1
                 };
                 const iframeLayer = document.querySelector('#nuqthah-player-container .video-iframe-layer');
+                // Reload only the YouTube iframe so extensions can reapply their video rules.
                 player.destroy();
                 player = null;
                 if (iframeLayer) {
@@ -1777,6 +1878,7 @@
                     'iv_load_policy': 3,
                     'cc_load_policy': 0,
                     'playsinline': 1,
+                    'vq': 'hd1080',
                     'start': Math.floor(resumeTime > 2 ? resumeTime : 0)
                 },
                 events: {
@@ -1788,6 +1890,8 @@
         }
 
         function onPlayerReady(event) {
+            syncYoutubeViewportScale();
+            enforceHighestVideoQuality(event.target);
             const playerIframe = event.target.getIframe();
             if (playerIframe) playerIframe.setAttribute('tabindex', '-1');
             disablePlayerCaptions();
@@ -1815,6 +1919,14 @@
 
         function onPlayerStateChange(event) {
             const state = event.data;
+            syncYoutubeViewportScale();
+            if (
+                state === YT.PlayerState.BUFFERING ||
+                state === YT.PlayerState.CUED ||
+                state === YT.PlayerState.PLAYING
+            ) {
+                enforceHighestVideoQuality(event.target);
+            }
 
             if (state === YT.PlayerState.PLAYING) {
                 disablePlayerCaptions();
@@ -1884,6 +1996,44 @@
             }
         }
 
+        function syncYoutubeViewportScale() {
+            const playerHeight = playerContainer.getBoundingClientRect().height;
+            const scale = playerHeight > 0 && playerHeight < 1080
+                ? Math.min(5, Math.max(1, +(1080 / playerHeight).toFixed(3)))
+                : 1;
+            playerContainer.style.setProperty('--yt-viewport-scale', String(scale));
+        }
+
+        function enforceHighestVideoQuality(targetPlayer = player) {
+            if (!targetPlayer) return;
+
+            const qualityPriority = ['hd2160', 'hd1440', 'hd1080', 'hd720', 'large'];
+            let availableQualities = [];
+            try {
+                if (typeof targetPlayer.getAvailableQualityLevels === 'function') {
+                    availableQualities = targetPlayer.getAvailableQualityLevels() || [];
+                }
+            } catch (error) {
+                console.warn('Kualitas video YouTube tidak dapat diperiksa:', error);
+            }
+
+            const bestQuality = qualityPriority.find(quality => availableQualities.includes(quality)) || 'hd1080';
+            if (typeof targetPlayer.setPlaybackQualityRange === 'function') {
+                try {
+                    targetPlayer.setPlaybackQualityRange(bestQuality, bestQuality);
+                } catch (error) {
+                    console.warn('Rentang kualitas video tidak dapat diterapkan:', error);
+                }
+            }
+            if (typeof targetPlayer.setPlaybackQuality === 'function') {
+                try {
+                    targetPlayer.setPlaybackQuality(bestQuality);
+                } catch (error) {
+                    console.warn('Kualitas video tidak dapat diterapkan:', error);
+                }
+            }
+        }
+
         function updatePlayerScrollMode() {
             const desktopLandscape = window.matchMedia('(min-width: 1024px) and (orientation: landscape)').matches;
             const isPlaying = player && window.YT && player.getPlayerState() === YT.PlayerState.PLAYING;
@@ -1893,6 +2043,7 @@
                 removePlayerPlaceholder();
                 if (isPlaying) playerContainer.classList.add('is-sticky-playing');
                 else playerContainer.classList.remove('is-sticky-playing');
+                syncYoutubeViewportScale();
                 return;
             }
 
@@ -1914,6 +2065,7 @@
                 playerContainer.classList.add('is-sticky-playing');
                 removePlayerPlaceholder();
             }
+            syncYoutubeViewportScale();
         }
 
         function removePlayerPlaceholder() {
@@ -2118,6 +2270,7 @@
                     try { screen.orientation.unlock(); } catch (e) { }
                 }
             }
+            syncYoutubeViewportScale();
         }
 
         async function forceLandscape() {
@@ -2128,6 +2281,7 @@
                 playerContainer.classList.remove('is-forced-landscape', 'is-pseudo-fullscreen');
                 document.body.style.overflow = '';
                 iconFullscreen.className = 'fas fa-expand text-xs sm:text-sm';
+                syncYoutubeViewportScale();
                 return;
             }
 
@@ -2143,6 +2297,7 @@
                     } else {
                         await screen.orientation.lock('portrait');
                     }
+                    syncYoutubeViewportScale();
                     return; // Berhasil di Android
                 } catch (err) {
                     // Jika ditolak oleh sistem (seperti pada iPhone/iOS), lanjut ke fallback CSS di bawah
@@ -2155,6 +2310,7 @@
             playerContainer.classList.add('is-forced-landscape');
             document.body.style.overflow = 'hidden';
             iconFullscreen.className = 'fas fa-compress text-xs sm:text-sm';
+            syncYoutubeViewportScale();
         }
 
         function showControls() {
@@ -2427,31 +2583,31 @@
                 if (courseDifference !== 0) return courseDifference;
 
                 const questionA = [a.question, a.option_a || a['option_-a'], a.option_b || a['option_-b'],
-                    a.option_c || a['option_-c'], a.option_d || a['option_-d'], a.correct_answer]
+                a.option_c || a['option_-c'], a.option_d || a['option_-d'], a.correct_answer]
                     .map(value => String(value || '')).join('|');
                 const questionB = [b.question, b.option_a || b['option_-a'], b.option_b || b['option_-b'],
-                    b.option_c || b['option_-c'], b.option_d || b['option_-d'], b.correct_answer]
+                b.option_c || b['option_-c'], b.option_d || b['option_-d'], b.correct_answer]
                     .map(value => String(value || '')).join('|');
                 return questionA.localeCompare(questionB);
             });
         }
 
-        function getPracticeProgress(progressCourseId) {
+        function getPracticeProgress(courseId) {
             try {
-                return JSON.parse(localStorage.getItem(`nuqthah_quiz_progress_${progressCourseId}`) || 'null');
+                return JSON.parse(localStorage.getItem(`nuqthah_quiz_progress_${courseId}`) || 'null');
             } catch (error) {
                 console.warn('Progres latihan tersimpan tidak valid:', error);
                 return null;
             }
         }
 
-        function getPracticeStartScore(progressCourseId) {
-            const storedScore = Number(localStorage.getItem(`nuqthah_quiz_session_start_${progressCourseId}`));
+        function getPracticeStartScore(courseId) {
+            const storedScore = Number(localStorage.getItem(`nuqthah_quiz_session_start_${courseId}`));
             return Number.isFinite(storedScore) ? storedScore : 0;
         }
 
-        function getPracticeActionLabel(progressCourseId) {
-            const progress = getPracticeProgress(progressCourseId);
+        function getPracticeActionLabel(courseId) {
+            const progress = getPracticeProgress(courseId);
             if (progress && !progress.isCompleted && progress.lastIndex > 0) return 'Lanjut';
             return 'Mulai';
         }
@@ -2953,6 +3109,7 @@
                 pendingPaymentInfo &&
                 pendingPaymentInfo.courseId === courseId &&
                 pendingPaymentInfo.userEmail === String(currentUser?.email || '').trim().toLowerCase() &&
+                Boolean(pendingPaymentInfo.token) &&
                 pendingPaymentInfo.methodSelected === true &&
                 pendingPaymentInfo.active !== false &&
                 (!pendingPaymentInfo.expiresAt || Date.parse(pendingPaymentInfo.expiresAt) > Date.now())
@@ -3001,6 +3158,14 @@
 
             isUserHasAccess = true;
             if (currentUser?.email) saveAccessCache(courseId, currentUser.email);
+            try {
+                localStorage.setItem('nuqthah_dashboard_access_updated', JSON.stringify({
+                    courseId,
+                    updatedAt: Date.now()
+                }));
+            } catch (error) {
+                console.warn('Sinyal pembaruan dashboard tidak dapat disimpan:', error);
+            }
             document.getElementById('user-status-badge').innerHTML = '<i class="fas fa-check-circle text-emerald-300 mr-1"></i> Akses Penuh Terbuka';
             document.getElementById('paywall-container').classList.add('hidden');
             showToast('Pembayaran berhasil! Akses materi sedang diperbarui.', 'success', 'Pembayaran Berhasil');
@@ -3083,6 +3248,7 @@
                     orderId: data.order_id,
                     courseId,
                     userEmail,
+                    token: data.token || (sameLocalTransaction ? localPayment?.token : null) || null,
                     active: true,
                     methodSelected: true,
                     paymentType: data.payment_type || null,
